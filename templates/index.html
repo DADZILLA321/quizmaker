@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+{% block content %}
+<h1>Notes paste karo, quiz pao</h1>
+<p class="muted">Apne notes daalo. Gemini unse MCQ banayega, phir aap solve karke score dekh sakte ho.</p>
+
+{% if demo %}
+  <p class="notice">DEMO MODE on hai: nakli sawal aayenge, notes se nahi.</p>
+{% elif not has_key %}
+  <p class="notice">GEMINI_API_KEY set nahi hai. <code>.env</code> file mein key daalo.</p>
+{% endif %}
+
+{% if error %}<p class="error">{{ error }}</p>{% endif %}
+
+<form method="POST" action="{{ url_for('generate') }}" class="card">
+  <label for="notes">Aapke notes</label>
+  <textarea id="notes" name="notes" rows="12" required
+            placeholder="Yahan notes paste karo (kam se kam 50 characters)...">{{ form.get('notes', '') }}</textarea>
+
+  <div class="row">
+    <div>
+      <label for="count">Kitne sawal</label>
+      <select id="count" name="count">
+        {% for n in [3, 5, 8, 10, 15] %}
+          <option value="{{ n }}" {% if form.get('count', 5) == n %}selected{% endif %}>{{ n }}</option>
+        {% endfor %}
+      </select>
+    </div>
+    <div>
+      <label for="difficulty">Level</label>
+      <select id="difficulty" name="difficulty">
+        {% for d in ['easy', 'medium', 'hard'] %}
+          <option value="{{ d }}" {% if form.get('difficulty', 'medium') == d %}selected{% endif %}>{{ d|capitalize }}</option>
+        {% endfor %}
+      </select>
+    </div>
+  </div>
+
+  <button type="submit" id="go" class="btn">✨ Quiz banao</button>
+</form>
+
+<script>
+  // Button dabne ke baad "wait" dikhao (Gemini ko 5-15 second lag sakte hain)
+  document.querySelector("form").addEventListener("submit", function () {
+    var b = document.getElementById("go");
+    b.disabled = true;
+    b.textContent = "Quiz ban raha hai... thoda wait karo";
+  });
+</script>
+{% endblock %}

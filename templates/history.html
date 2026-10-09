@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% block title %}History{% endblock %}
+{% block content %}
+<h1>Purane results</h1>
+{% if rows %}
+  <div class="card">
+    <table>
+      <tr><th>Topic</th><th>Score</th><th>Kab</th><th></th></tr>
+      {% for r in rows %}
+        <tr>
+          <td>{{ r.title }}</td>
+          <td>{{ r.score }} / {{ r.total }}</td>
+          <td class="muted">{{ r.created_at }}</td>
+          <td><a href="{{ url_for('result', attempt_id=r.id) }}">Dekho</a></td>
+        </tr>
+      {% endfor %}
+    </table>
+  </div>
+{% else %}
+  <p class="muted">Abhi koi quiz nahi diya. <a href="{{ url_for('home') }}">Pehla quiz banao</a>.</p>
+{% endif %}
+{% endblock %}

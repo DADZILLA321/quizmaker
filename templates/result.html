@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+{% block title %}Result{% endblock %}
+{% block content %}
+<h1>Aapka result</h1>
+
+<div class="card score">
+  <div class="big">{{ attempt.score }} / {{ attempt.total }}</div>
+  <div class="muted">{{ percent }}% sahi</div>
+  <p>
+    {% if percent == 100 %}Zabardast! Ek bhi galti nahi 🎉
+    {% elif percent >= 70 %}Bahut badhiya 👍
+    {% elif percent >= 40 %}Theek hai, thodi aur practice karo 💪
+    {% else %}Koi baat nahi, explanation padho aur dobara try karo 🙏{% endif %}
+  </p>
+  <div class="row-btns">
+    {% if wrong > 0 %}
+      <form method="POST" action="{{ url_for('practice', attempt_id=attempt.id) }}">
+        <button class="btn" type="submit">🔁 Sirf galat sawal practice karo ({{ wrong }})</button>
+      </form>
+    {% endif %}
+    <a class="btn ghost" href="{{ url_for('quiz', quiz_id=quiz.id) }}">Yahi quiz dobara</a>
+    <a class="btn ghost" href="{{ url_for('home') }}">Naye notes</a>
+  </div>
+</div>
+
+<h2>Jawab ki jaanch</h2>
+{% for q in quiz.questions %}
+  {% set chosen = answers[loop.index0] %}
+  <div class="card {{ 'good' if chosen == q.answer else 'bad' }}">
+    <p class="q">Q{{ loop.index }}. {{ q.question }}</p>
+    {% for opt in q.options %}
+      {% set i = loop.index0 %}
+      <div class="rev {% if i == q.answer %}right{% elif i == chosen %}wrong{% endif %}">
+        <b>{{ "ABCD"[i] }}.</b> {{ opt }}
+        {% if i == q.answer %}<span> ✔ sahi jawab</span>{% endif %}
+        {% if i == chosen and i != q.answer %}<span> ✘ aapka jawab</span>{% endif %}
+      </div>
+    {% endfor %}
+    {% if chosen is none %}<p class="muted">Aapne ye sawal chhod diya.</p>{% endif %}
+    {% if q.explanation %}<p class="expl">💡 {{ q.explanation }}</p>{% endif %}
+  </div>
+{% endfor %}
+{% endblock %}
